@@ -1,0 +1,49 @@
+#!/bin/bash
+
+BLACK=`tput setaf 0`
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+YELLOW=`tput setaf 3`
+BLUE=`tput setaf 4`
+MAGENTA=`tput setaf 5`
+CYAN=`tput setaf 6`
+WHITE=`tput setaf 7`
+
+BOLD=`tput bold`
+RESET=`tput sgr0`
+
+echo ""
+
+echo -e  "${YELLOW}CAUTION: This script needs to be in the same directory as your dockerfile ${RESET}"
+echo ""
+
+echo "These docker images already exist: "
+echo ""
+
+docker images --format "${GREEN}{{.Repository}}${RESET}"
+echo ""
+
+echo "Create name for new Docker Image, "
+echo "${YELLOW}Creating a duplicate name will overwrite old image ${RESET}"
+read -p "Image Name: " imageVar
+
+echo "***CREATING IMAGE $imageVar ***"
+
+
+docker build --no-cache -t $imageVar .
+echo ""
+echo "${GREEN} **Docker Image $imageVar Created** ${RESET}"
+
+
+read -p "Name the Container for $imageVar: " containerVar
+echo ""
+echo "Starting $containerVar container"
+
+docker run -d --name $containerVar -p 8080:8080 -p 50000:50000 $imageVar
+echo ""
+echo "${GREEN}**DONE! NOW RUNNING $containerVar IN DETATCHED MODE** ${RESET}"
+echo ""
+
+echo "Outputting docker ps to ensure container is running!"
+echo ""
+docker ps
